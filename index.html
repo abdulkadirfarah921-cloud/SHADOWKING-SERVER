@@ -5,13 +5,14 @@
     <title>Shadow King Login</title>
     <style>
         body {background:#111; color:#fff; font-family: Arial; text-align:center; padding:50px;}
-        input, button {padding:10px; margin:5px; border-radius:5px; border:none;}
-        button {background:#ff0000; color:#fff; cursor:pointer;}
-        #msg {margin-top:20px; font-weight:bold;}
+        input, button {padding:12px; margin:8px; border-radius:8px; border:none; width:250px;}
+        button {background:#ff0000; color:#fff; cursor:pointer; font-weight:bold;}
+        button:hover {background:#cc0000;}
+        #msg {margin-top:20px; font-weight:bold; font-size:18px;}
     </style>
 </head>
 <body>
-    <h1>Shadow King - تسجيل الدخول</h1>
+    <h1>👑 Shadow King - تسجيل الدخول</h1>
     <input type="email" id="email" placeholder="الايميل"><br>
     <input type="password" id="pass" placeholder="كلمة السر"><br>
     <button onclick="login()">دخول</button>
@@ -19,7 +20,7 @@
     <div id="msg"></div>
 
 <script>
-const API = "حط_رابط_render_هون"; // مثال: https://shadowking-server.onrender.com
+const API = "https://shadowking-server.onrender.com"; // رابط السيرفر تبعك
 
 async function login(){
     let email = document.getElementById('email').value;
@@ -31,6 +32,7 @@ async function login(){
     });
     let data = await res.json();
     document.getElementById('msg').innerHTML = data.msg;
+    if(data.success) alert("اهلا وسهلا " + email);
 }
 
 async function register(){
