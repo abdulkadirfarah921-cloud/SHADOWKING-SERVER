@@ -2,37 +2,39 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Shadow King Login</title>
+    <title>Shadow King - السيرفر الخاص</title>
     <style>
-        body {background:#111; color:#fff; font-family: Arial; text-align:center; padding:50px;}
-        input, button {padding:12px; margin:8px; border-radius:8px; border:none; width:250px;}
-        button {background:#ff0000; color:#fff; cursor:pointer; font-weight:bold;}
+        body {background:#0a0a0a; color:#fff; font-family: Arial; text-align:center; padding:50px;}
+        .box {background:#1a1a1a; padding:30px; border-radius:15px; width:320px; margin:auto; border:2px solid red;}
+        input, button {padding:12px; margin:8px; border-radius:8px; border:none; width:90%;}
+        button {background:#ff0000; color:#fff; cursor:pointer; font-weight:bold; font-size:16px;}
         button:hover {background:#cc0000;}
         #msg {margin-top:20px; font-weight:bold; font-size:18px;}
+        .admin {border:2px solid gold;}
     </style>
 </head>
 <body>
-    <h1>👑 Shadow King - تسجيل الدخول</h1>
-    <input type="email" id="email" placeholder="الايميل"><br>
-    <input type="password" id="pass" placeholder="كلمة السر"><br>
-    <button onclick="login()">دخول</button>
-    <button onclick="register()">تسجيل جديد</button>
-    <div id="msg"></div>
+    <div class="box admin">
+        <h1>👑 Shadow King</h1>
+        <p>السيرفر الخاص - للادمن فقط</p>
+        <input type="email" id="email" placeholder="الايميل"><br>
+        <input type="password" id="pass" placeholder="كلمة السر"><br>
+        <button onclick="login()">تسجيل دخول</button>
+        <button onclick="register()">انشاء حساب ادمن</button>
+        <hr style="border-color:red;">
+        <h3>لوحة الحظر</h3>
+        <input type="email" id="banEmail" placeholder="ايميل اللاعب للحظر"><br>
+        <button onclick="banUser()">🚫 حظر اللاعب</button>
+        <div id="msg"></div>
+    </div>
 
 <script>
 const API = "https://shadowking-server.onrender.com"; // رابط السيرفر تبعك
+const MY_EMAIL = "abdulkadirfarah921@gmail.com"; // ايميلك انت
 
-async function login(){
-    let email = document.getElementById('email').value;
-    let pass = document.getElementById('pass').value;
-    let res = await fetch(API + "/api/login", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({email, password: pass})
-    });
-    let data = await res.json();
-    document.getElementById('msg').innerHTML = data.msg;
-    if(data.success) alert("اهلا وسهلا " + email);
+function showMsg(text, color){
+    document.getElementById('msg').innerHTML = text;
+    document.getElementById('msg').style.color = color;
 }
 
 async function register(){
@@ -44,7 +46,31 @@ async function register(){
         body: JSON.stringify({email, password: pass})
     });
     let data = await res.json();
-    document.getElementById('msg').innerHTML = data.msg;
+    showMsg(data.msg, data.success ? "#00ff00" : "red");
+}
+
+async function login(){
+    let email = document.getElementById('email').value;
+    let pass = document.getElementById('pass').value;
+    let res = await fetch(API + "/api/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email, password: pass})
+    });
+    let data = await res.json();
+    showMsg(data.msg, data.success ? "#00ff00" : "red");
+    if(data.success) alert("اهلا الادمن " + email);
+}
+
+async function banUser(){
+    let target = document.getElementById('banEmail').value;
+    let res = await fetch(API + "/api/ban", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({adminEmail: MY_EMAIL, targetEmail: target})
+    });
+    let data = await res.json();
+    showMsg(data.msg, data.success ? "#00ff00" : "red");
 }
 </script>
 </body>
