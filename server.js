@@ -12,7 +12,6 @@ const ADMIN_EMAIL = "abdulkadirfarah921@gmail.com";
 function readDB(){ if(!fs.existsSync(DB_FILE)) fs.writeFileSync(DB_FILE, '[]'); return JSON.parse(fs.readFileSync(DB_FILE)); }
 function saveDB(data){ fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2)); }
 
-// تسجيل دخول
 app.post('/api/login', (req, res) => {
     let {email, password} = req.body;
     let users = readDB();
@@ -25,12 +24,11 @@ app.post('/api/login', (req, res) => {
     res.json({success: true, msg: "✅ تم الدخول"});
 });
 
-// اعطاء بند ب ID
 app.post('/api/ban', (req, res) => {
     let {adminEmail, playerId, days} = req.body;
     if(adminEmail !== ADMIN_EMAIL) return res.json({success: false, msg: "❌ انت مش الادمن"});
     let users = readDB();
-    let user = users.find(u => u.playerId === playerId); // نبحث بال ID
+    let user = users.find(u => u.playerId === playerId);
     if(!user) return res.json({success: false, msg: "❌ ال ID مش موجود"});
     user.banned = true;
     user.banUntil = Date.now() + (days * 24 * 60 * 60 * 1000);
@@ -38,7 +36,6 @@ app.post('/api/ban', (req, res) => {
     res.json({success: true, msg: `✅ تم حظر ${playerId} لمدة ${days} يوم`});
 });
 
-// فك البند ب ID
 app.post('/api/unban', (req, res) => {
     let {adminEmail, playerId} = req.body;
     if(adminEmail !== ADMIN_EMAIL) return res.json({success: false, msg: "❌ انت مش الادمن"});
@@ -48,7 +45,6 @@ app.post('/api/unban', (req, res) => {
     res.json({success: true, msg: `✅ تم فك الحظر عن ${playerId}`});
 });
 
-// جلب كل اللاعبين
 app.get('/api/players', (req, res) => { res.json(readDB()); });
 
 const PORT = process.env.PORT || 10000;
