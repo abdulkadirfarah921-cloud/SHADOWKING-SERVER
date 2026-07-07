@@ -1,137 +1,55 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<title>لوحة تحكم الادمن</title>
-<style>
-    body{background:#1a1a1a;color:#fff;font-family:'Tahoma';text-align:center;padding:20px}
-    input,button,select{padding:10px;margin:5px;border-radius:8px;border:none}
-    input{background:#333;color:#fff;width:250px}
-    button{background:#00ff88;color:#000;cursor:pointer;font-weight:bold}
-    button:hover{background:#00cc6a}
-    .container{background:#2a2a2a;padding:20px;border-radius:15px;max-width:900px;margin:auto}
-    table{width:100%;margin-top:20px;border-collapse:collapse}
-    td,th{border:1px solid #444;padding:8px}
-    #msg{margin-top:10px;font-weight:bold}
-    .banned{color:red}
-    #chatBox{background:#111;padding:10px;margin-top:10px;height:200px;overflow-y:scroll;text-align:right;border-radius:8px}
-    hr{border-color:#444;margin:20px 0}
-</style>
-</head>
-<body>
-<div class="container">
-    <h1>👑 لوحة تحكم الادمن</h1>
-    
-    <div id="loginScreen">
-        <h2>تسجيل الدخول</h2>
-        <input type="text" id="playerId" value="SK_ADMIN_OMEGA_001" placeholder="ID الادمن"><br>
-        <input type="password" id="pass" placeholder="كلمة السر"><br>
-        <button onclick="login()">دخول</button>
-        <div id="msg"></div>
-    </div>
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>لوحة تحكم الادمن</title>
+<style>body{background:#111;color:#fff;font-family:'Tahoma';text-align:center;padding:20px}
+.container{background:#1e1e1e;padding:20px;border-radius:15px;max-width:1000px;margin:auto}
+input,button,select{padding:10px;margin:5px;border-radius:8px;border:none}
+input{background:#333;color:#fff;width:200px} button{background:#00ff88;color:#000;cursor:pointer;font-weight:bold}
+button.red{background:#ff4444} button.blue{background:#3399ff} button.orange{background:#ffaa00}
+table{width:100%;margin-top:20px;border-collapse:collapse} td,th{border:1px solid #333;padding:8px}
+#chatBox{background:#000;padding:10px;height:150px;overflow-y:scroll;text-align:right;border-radius:8px}
+.box{border:1px solid #333;padding:15px;margin:10px 0;border-radius:10px}
+</style></head><body>
+<div class="container"><h1>👑 لوحة تحكم ShadowKing</h1>
+<div id="loginScreen"><h2>تسجيل الدخول</h2>
+<input id="playerId" value="SK_ADMIN_OMEGA_001"><br><input type="password" id="pass"><br>
+<button onclick="login()">دخول</button><div id="msg"></div></div>
 
-    <div id="adminPanel" style="display:none">
-        <h2>ادارة اللاعبين</h2>
-        <button onclick="loadPlayers()">🔄 تحديث</button>
-        <hr>
-        
-        <h3>حظر لاعب بالـ ID</h3>
-        <input type="text" id="banId" placeholder="ID اللاعب">
-        <select id="banDays">
-            <option value="1">يوم واحد</option>
-            <option value="7">اسبوع</option>
-            <option value="30">30 يوم</option>
-        </select>
-        <button onclick="banPlayer()">🔨 حظر</button>
-        <hr>
+<div id="adminPanel" style="display:none">
+<button onclick="loadPlayers()">🔄 تحديث الكل</button>
 
-        <h3>1- حظر بالـ IP</h3>
-        <input type="text" id="banIpId" placeholder="ID اللاعب">
-        <button onclick="banIp()">🔥 حظر IP</button>
-        <hr>
+<div class="box"><h3>1- ادارة اللاعبين</h3><table id="playersTable"></table></div>
 
-        <h3>2- عرض شات اللاعب</h3>
-        <input type="text" id="chatId" placeholder="ID اللاعب">
-        <button onclick="loadChat()">💬 عرض الشات</button>
-        <div id="chatBox">اكتب ID ودوس عرض</div>
-        <hr>
-        
-        <h3>قائمة اللاعبين</h3>
-        <table id="playersTable"></table>
-    </div>
-</div>
+<div class="box"><h3>2- حظر ID</h3>
+<input id="banId" placeholder="ID اللاعب"><select id="banDays"><option value="1">يوم</option><option value="7">اسبوع</option><option value="30">30 يوم</option></select>
+<button class="red" onclick="banPlayer()">🔨 حظر</button></div>
+
+<div class="box"><h3>3- حظر IP</h3>
+<input id="banIpId" placeholder="ID اللاعب"><button class="red" onclick="banIp()">🔥 حظر IP</button></div>
+
+<div class="box"><h3>4- طرد لاعب</h3>
+<input id="kickId" placeholder="ID اللاعب"><button class="orange" onclick="kick()">👢 طرد</button></div>
+
+<div class="box"><h3>5- اعطاء فلوس</h3>
+<input id="moneyId" placeholder="ID اللاعب"><input id="moneyAmount" type="number" placeholder="المبلغ">
+<button class="blue" onclick="giveMoney()">💰 اعطاء</button></div>
+
+<div class="box"><h3>6- ارسال رسالة</h3>
+<input id="msgId" placeholder="ID اللاعب"><input id="msgText" placeholder="الرسالة">
+<button class="blue" onclick="sendMsg()">📨 ارسال</button></div>
+
+<div class="box"><h3>7- عرض شات اللاعب</h3>
+<input id="chatId" placeholder="ID اللاعب"><button onclick="loadChat()">💬 عرض</button>
+<div id="chatBox">اكتب ID ودوس عرض</div></div>
+</div></div>
 
 <script>
-const API = "https://shadowking-server.onrender.com"; // غيره لرابطك
-
-async function login(){
-  let res = await fetch(API+"/api/login",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({playerId:playerId.value,password:pass.value, ip:"0.0.0.0"})
-  });
-  let data = await res.json(); 
-  document.getElementById('msg').innerHTML = data.msg;
-  if(data.success){
-    document.getElementById('msg').style.color="lightgreen";
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    loadPlayers();
-  } else { 
-    document.getElementById('msg').style.color="red"; 
-  }
-}
-
-async function loadPlayers(){
-  let res = await fetch(API+"/api/players");
-  let users = await res.json();
-  let table = "<tr><th>ID</th><th>IP</th><th>الحالة</th><th>اخر دخول</th><th>فك حظر</th></tr>";
-  users.forEach(u=>{
-    let status = u.banned ? `<span class='banned'>محظور</span>` : "نشط";
-    let unbanBtn = u.banned ? `<button onclick="unban('${u.playerId}')">فك</button>` : "-";
-    table += `<tr><td>${u.playerId}</td><td>${u.ip || '-'}</td><td>${status}</td><td>${new Date(u.lastLogin).toLocaleString()}</td><td>${unbanBtn}</td></tr>`;
-  });
-  document.getElementById('playersTable').innerHTML = table;
-}
-
-async function banPlayer(){
-  let res = await fetch(API+"/api/ban",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({playerId:banId.value,days:parseInt(banDays.value)})
-  });
-  let data = await res.json();
-  alert(data.msg);
-  loadPlayers();
-}
-
-async function banIp(){
-  let res = await fetch(API+"/api/banip",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({playerId:banIpId.value})
-  });
-  let data = await res.json();
-  alert(data.msg);
-}
-
-async function unban(id){
-  let res = await fetch(API+"/api/unban",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({playerId:id})
-  });
-  let data = await res.json();
-  alert(data.msg);
-  loadPlayers();
-}
-
-async function loadChat(){
-  let res = await fetch(API+"/api/chat/"+chatId.value);
-  let data = await res.json();
-  let box = document.getElementById('chatBox');
-  box.innerHTML = data.chat.length ? data.chat.join('<br>') : "لا يوجد رسائل";
-}
-</script>
-</body>
-</html>
+const API = "https://shadowking-server.onrender.com";
+async function login(){let res=await fetch(API+"/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:playerId.value,password:pass.value,ip:"0.0.0.0"})});let data=await res.json();msg.innerHTML=data.msg;if(data.success){loginScreen.style.display='none';adminPanel.style.display='block';loadPlayers();}}
+async function loadPlayers(){let res=await fetch(API+"/api/players");let users=await res.json();let table="<tr><th>ID</th><th>IP</th><th>فلوس</th><th>الحالة</th><th>اخر دخول</th><th>فك</th></tr>";users.forEach(u=>{let status=u.banned?"<span style='color:red'>محظور</span>":"نشط";let unban=u.banned?`<button onclick="unban('${u.playerId}')">فك</button>`:"-";table+=`<tr><td>${u.playerId}</td><td>${u.ip||'-'}</td><td>${u.money||0}</td><td>${status}</td><td>${new Date(u.lastLogin).toLocaleString()}</td><td>${unban}</td></tr>`});playersTable.innerHTML=table;}
+async function banPlayer(){let res=await fetch(API+"/api/ban",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:banId.value,days:parseInt(banDays.value)})});alert((await res.json()).msg);loadPlayers();}
+async function banIp(){let res=await fetch(API+"/api/banip",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:banIpId.value})});alert((await res.json()).msg);}
+async function kick(){let res=await fetch(API+"/api/kick",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:kickId.value})});alert((await res.json()).msg);}
+async function giveMoney(){let res=await fetch(API+"/api/givemoney",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:moneyId.value,amount:moneyAmount.value})});alert((await res.json()).msg);loadPlayers();}
+async function sendMsg(){let res=await fetch(API+"/api/sendmsg",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:msgId.value,msg:msgText.value})});alert((await res.json()).msg);}
+async function unban(id){let res=await fetch(API+"/api/unban",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:id})});alert((await res.json()).msg);loadPlayers();}
+async function loadChat(){let res=await fetch(API+"/api/chat/"+chatId.value);let data=await res.json();chatBox.innerHTML=data.chat.length?data.chat.join('<br>'):"لا يوجد رسائل";}
+</script></body></html>
