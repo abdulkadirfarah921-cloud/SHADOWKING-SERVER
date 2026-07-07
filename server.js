@@ -9,7 +9,7 @@ const DB_PATH = path.join(__dirname, 'users.json');
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static('.')); // مهم: النقطة عشان يقرأ من الجذر
 
 // قراءة الداتا
 function readDB() {
@@ -21,6 +21,11 @@ function readDB() {
 function saveDB(data) {
     fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
 }
+
+// الصفحة الرئيسية
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // تسجيل دخول بالـ ID
 app.post('/api/login', (req, res) => {
@@ -42,7 +47,7 @@ app.post('/api/login', (req, res) => {
     
     user.lastLogin = Date.now();
     saveDB(users);
-    res.json({success: true, msg: "✅ تم الدخول", user: {playerId: user.playerId}});
+    res.json({success: true, msg: "✅ تم الدخول"});
 });
 
 // جلب اللاعبين
