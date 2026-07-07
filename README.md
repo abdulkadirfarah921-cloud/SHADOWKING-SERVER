@@ -38,8 +38,6 @@
             <option value="1">يوم واحد</option>
             <option value="7">اسبوع</option>
             <option value="30">30 يوم</option>
-            <option value="365">سنة</option>
-            <option value="3650">10 سنين</option>
         </select>
         <button onclick="banPlayer()">🔨 حظر</button>
         
@@ -49,7 +47,7 @@
 </div>
 
 <script>
-const API = "";
+const API = "https://shadowking-server.onrender.com"; // خليه هيك
 
 async function login(){
   let res = await fetch(API+"/api/login",{
