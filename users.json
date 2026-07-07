@@ -2,8 +2,11 @@
   {
     "playerId": "SK_ADMIN_OMEGA_001",
     "password": "SK#9zQ!vL2@xP_7KqW",
+    "ip": "127.0.0.1",
     "banned": false,
     "banUntil": null,
-    "lastLogin": 0
+    "bannedIps": [],
+    "lastLogin": 0,
+    "chat": ["مرحبا انا الادمن", "تم تجربة السيرفر"]
   }
 ]

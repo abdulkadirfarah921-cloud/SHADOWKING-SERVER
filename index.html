@@ -9,11 +9,13 @@
     input{background:#333;color:#fff;width:250px}
     button{background:#00ff88;color:#000;cursor:pointer;font-weight:bold}
     button:hover{background:#00cc6a}
-    .container{background:#2a2a2a;padding:20px;border-radius:15px;max-width:800px;margin:auto}
+    .container{background:#2a2a2a;padding:20px;border-radius:15px;max-width:900px;margin:auto}
     table{width:100%;margin-top:20px;border-collapse:collapse}
     td,th{border:1px solid #444;padding:8px}
     #msg{margin-top:10px;font-weight:bold}
     .banned{color:red}
+    #chatBox{background:#111;padding:10px;margin-top:10px;height:200px;overflow-y:scroll;text-align:right;border-radius:8px}
+    hr{border-color:#444;margin:20px 0}
 </style>
 </head>
 <body>
@@ -31,8 +33,9 @@
     <div id="adminPanel" style="display:none">
         <h2>ادارة اللاعبين</h2>
         <button onclick="loadPlayers()">🔄 تحديث</button>
+        <hr>
         
-        <h3>حظر لاعب</h3>
+        <h3>حظر لاعب بالـ ID</h3>
         <input type="text" id="banId" placeholder="ID اللاعب">
         <select id="banDays">
             <option value="1">يوم واحد</option>
@@ -40,6 +43,18 @@
             <option value="30">30 يوم</option>
         </select>
         <button onclick="banPlayer()">🔨 حظر</button>
+        <hr>
+
+        <h3>1- حظر بالـ IP</h3>
+        <input type="text" id="banIpId" placeholder="ID اللاعب">
+        <button onclick="banIp()">🔥 حظر IP</button>
+        <hr>
+
+        <h3>2- عرض شات اللاعب</h3>
+        <input type="text" id="chatId" placeholder="ID اللاعب">
+        <button onclick="loadChat()">💬 عرض الشات</button>
+        <div id="chatBox">اكتب ID ودوس عرض</div>
+        <hr>
         
         <h3>قائمة اللاعبين</h3>
         <table id="playersTable"></table>
@@ -47,13 +62,13 @@
 </div>
 
 <script>
-const API = "https://shadowking-server.onrender.com"; // خليه هيك
+const API = "https://shadowking-server.onrender.com"; // غيره لرابطك
 
 async function login(){
   let res = await fetch(API+"/api/login",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({playerId:playerId.value,password:pass.value})
+    body:JSON.stringify({playerId:playerId.value,password:pass.value, ip:"0.0.0.0"})
   });
   let data = await res.json(); 
   document.getElementById('msg').innerHTML = data.msg;
@@ -70,11 +85,11 @@ async function login(){
 async function loadPlayers(){
   let res = await fetch(API+"/api/players");
   let users = await res.json();
-  let table = "<tr><th>ID</th><th>الحالة</th><th>اخر دخول</th><th>فك حظر</th></tr>";
+  let table = "<tr><th>ID</th><th>IP</th><th>الحالة</th><th>اخر دخول</th><th>فك حظر</th></tr>";
   users.forEach(u=>{
-    let status = u.banned ? `<span class='banned'>محظور لحد ${new Date(u.banUntil).toLocaleDateString()}</span>` : "نشط";
+    let status = u.banned ? `<span class='banned'>محظور</span>` : "نشط";
     let unbanBtn = u.banned ? `<button onclick="unban('${u.playerId}')">فك</button>` : "-";
-    table += `<tr><td>${u.playerId}</td><td>${status}</td><td>${new Date(u.lastLogin).toLocaleString()}</td><td>${unbanBtn}</td></tr>`;
+    table += `<tr><td>${u.playerId}</td><td>${u.ip || '-'}</td><td>${status}</td><td>${new Date(u.lastLogin).toLocaleString()}</td><td>${unbanBtn}</td></tr>`;
   });
   document.getElementById('playersTable').innerHTML = table;
 }
@@ -90,6 +105,16 @@ async function banPlayer(){
   loadPlayers();
 }
 
+async function banIp(){
+  let res = await fetch(API+"/api/banip",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({playerId:banIpId.value})
+  });
+  let data = await res.json();
+  alert(data.msg);
+}
+
 async function unban(id){
   let res = await fetch(API+"/api/unban",{
     method:"POST",
@@ -99,6 +124,13 @@ async function unban(id){
   let data = await res.json();
   alert(data.msg);
   loadPlayers();
+}
+
+async function loadChat(){
+  let res = await fetch(API+"/api/chat/"+chatId.value);
+  let data = await res.json();
+  let box = document.getElementById('chatBox');
+  box.innerHTML = data.chat.length ? data.chat.join('<br>') : "لا يوجد رسائل";
 }
 </script>
 </body>
