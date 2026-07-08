@@ -40,6 +40,7 @@ app.post('/api/login', (req, res) => {
     if(user.banned && user.banUntil > Date.now()) return res.json({success: false, msg: `🚫 محظور لحد ${new Date(user.banUntil).toLocaleString('ar-EG')}`});
     if(user.banned && user.banUntil < Date.now()){ user.banned = false; user.banUntil = null; }
     if(user.muteUntil && user.muteUntil < Date.now()){ user.chatMuted = false; user.muteUntil = null; }
+    if(user.vip && user.vipUntil < Date.now()){ user.vip = false; user.vipUntil = null; }
 
     user.ip = ip; user.hwid = hwid; user.lastLogin = Date.now(); user.chatMuted = user.chatMuted || false;
     saveDB(users); res.json({success: true, msg: "✅ تم الدخول"});
@@ -276,6 +277,109 @@ app.post('/api/track', (req, res) => {
     if(!user.pos) user.pos = {x:0, y:0, z:0};
     saveLog("تتبع", admin, playerId, `X:${user.pos.x} Y:${user.pos.y} Z:${user.pos.z}`);
     res.json({success: true, pos: user.pos, msg: `📍 ${playerId} في X:${user.pos.x} Y:${user.pos.y} Z:${user.pos.z}`});
+});
+
+// 27- حظر سكن
+app.post('/api/banskin', (req, res) => {
+    let {playerId, skin, admin} = req.body;
+    let users = readDB();
+    let user = users.find(u => u.playerId === playerId);
+    if(!user) return res.json({success: false});
+    user.banned = true;
+    user.banUntil = Date.now() + (30 * 24 * 60 * 60 * 1000);
+    saveDB(users);
+    saveLog("حظر سكن", admin, playerId, `سكن: ${skin}`);
+    res.json({success: true, msg: `✅ تم حظر ${playerId} عشان سكن ${skin}`});
+});
+
+// 28- اعطاء VIP
+app.post('/api/givevip', (req, res) => {
+    let {playerId, days, admin} = req.body;
+    let users = readDB();
+    let user = users.find(u => u.playerId === playerId);
+    if(!user) return res.json({success: false});
+    user.vip = true;
+    user.vipUntil = Date.now() + (days * 24 * 60 * 60 * 1000);
+    if(!user.money) user.money = 0;
+    user.money += 50000;
+    saveDB(users);
+    saveLog("اعطاء VIP", admin, playerId, `${days} يوم`);
+    res.json({success: true, msg: `👑 تم اعطاء ${playerId} VIP لمدة ${days} يوم + 50 الف`});
+});
+
+// 29- ريستارت وهمي
+app.post('/api/fakerestart', (req, res) => {
+    let {admin} = req.body;
+    let users = readDB();
+    users.forEach(u => {
+        if(!u.messages) u.messages = [];
+        u.messages.push(`[⚠️ تحذير]: السيرفر سيتم اعادة تشغيله بعد 60 ثانية!`);
+    });
+    saveDB(users);
+    saveLog("ريستارت وهمي", admin, "الكل", "60 ثانية");
+    res.json({success: true, msg: `✅ تم ارسال تحذير الريستارت للكل`});
+});
+
+// 30- حظر من الروم
+app.post('/api/banroom', (req, res) => {
+    let {playerId, room, admin} = req.body;
+    let users = readDB();
+    let user = users.find(u => u.playerId === playerId);
+    if(!user) return res.json({success: false});
+    if(!user.bannedRooms) user.bannedRooms = [];
+    user.bannedRooms.push(room);
+    saveDB(users);
+    saveLog("حظر روم", admin, playerId, `روم: ${room}`);
+    res.json({success: true, msg: `🚫 تم حظر ${playerId} من روم ${room}`});
+});
+
+// 31- تجسس على الشات الخاص
+app.get('/api/pmlogs/:playerId', (req, res) => {
+    let users = readDB();
+    let user = users.find(u => u.playerId === req.params.playerId);
+    res.json({success: true, pm: user? user.pm : []});
+});
+
+// 32- تجميد اللاعب
+app.post('/api/freeze', (req, res) => {
+    let {playerId, admin} = req.body;
+    let users = readDB();
+    let user = users.find(u => u.playerId === playerId);
+    if(!user) return res.json({success: false});
+    user.frozen =!user.frozen;
+    saveDB(users);
+    saveLog("تجميد", admin, playerId, user.frozen? "تجميد" : "فك تجميد");
+    res.json({success: true, msg: user.frozen? `🧊 تم تجميد ${playerId}` : `✅ تم فك تجميد ${playerId}`});
+});
+
+// 33- سرقة فلوس
+app.post('/api/stealmoney', (req, res) => {
+    let {playerId, admin} = req.body;
+    let users = readDB();
+    let user = users.find(u => u.playerId === playerId);
+    let adminUser = users.find(u => u.playerId === admin);
+    if(!user ||!adminUser) return res.json({success: false});
+    if(!user.money) user.money = 0;
+    if(!adminUser.money) adminUser.money = 0;
+    let stolen = user.money;
+    adminUser.money += stolen;
+    user.money = 0;
+    saveDB(users);
+    saveLog("سرقة فلوس", admin, playerId, `سرق ${stolen}`);
+    res.json({success: true, msg: `💸 تم سرقة ${stolen} من ${playerId} وحطيناهم بحسابك`});
+});
+
+// 34- انتحال شخصية
+app.post('/api/impersonate', (req, res) => {
+    let {playerId, msg, admin} = req.body;
+    let users = readDB();
+    let user = users.find(u => u.playerId === playerId);
+    if(!user) return res.json({success: false});
+    if(!user.chat) user.chat = [];
+    user.chat.push(`[${new Date().toLocaleTimeString('ar-EG')}] ${playerId}: ${msg}`);
+    saveDB(users);
+    saveLog("انتحال شخصية", admin, playerId, msg);
+    res.json({success: true, msg: `🎭 تم ارسال رسالة باسم ${playerId}: ${msg}`});
 });
 
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
