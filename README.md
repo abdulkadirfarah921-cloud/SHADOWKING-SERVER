@@ -7,8 +7,8 @@ button.red{background:#ff4444} button.blue{background:#3399ff} button.orange{bac
 table{width:100%;margin-top:20px;border-collapse:collapse;font-size:13px} td,th{border:1px solid #333;padding:8px}
 #chatBox,#logBox{background:#000;padding:10px;height:200px;overflow-y:scroll;text-align:right;border-radius:8px}
 .box{border:1px solid #333;padding:15px;margin:15px 0;border-radius:10px;background:#222}
-.stats{display:flex;justify-content:space-around;margin:15px 0}
-.statBox{background:#2a2a2a;padding:15px;border-radius:10px;width:30%}
+.stats{display:flex;justify-content:space-around;margin:15px 0;flex-wrap:wrap}
+.statBox{background:#2a2a2a;padding:15px;border-radius:10px;width:30%;min-width:120px;margin:5px}
 h1{color:#00ff88} h3{color:#00ff88}
 </style></head><body>
 <div class="container"><h1>👑 لوحة تحكم ShadowKing</h1>
@@ -59,6 +59,17 @@ h1{color:#00ff88} h3{color:#00ff88}
 <div class="box"><h3>10- سجل الحظرات</h3>
 <button onclick="loadLogs()">📜 تحديث السجل</button>
 <div id="logBox">دوس تحديث السجل</div></div>
+
+<div class="box"><h3>11- تليبورت لاعب</h3>
+<input id="tpId" placeholder="ID اللاعب"><input id="tpTarget" placeholder="ID الهدف">
+<button class="purple" onclick="teleport()">🚀 سحب</button></div>
+
+<div class="box"><h3>12- نسخ احتياطي</h3>
+<button class="blue" onclick="backup()">💾 تحميل النسخة</button></div>
+
+<div class="box"><h3>13- اعلان للكل</h3>
+<input id="broadcastMsg" placeholder="اكتب الاعلان هنا" style="width:60%">
+<button class="orange" onclick="broadcast()">📢 ارسال</button></div>
 </div></div>
 
 <script>
@@ -80,4 +91,7 @@ async function sendMsg(){let res=await fetch(API+"/api/sendmsg",{method:"POST",h
 async function unban(id){let res=await fetch(API+"/api/unban",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:id,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
 async function loadChat(){let res=await fetch(API+"/api/chat/"+chatId.value);let data=await res.json();chatBox.innerHTML=data.chat.length?data.chat.join('<br>'):"لا يوجد رسائل";}
 async function loadLogs(){let res=await fetch(API+"/api/logs");let logs=await res.json();logBox.innerHTML=logs.reverse().map(l=>`[${l.time}] ${l.admin} عمل ${l.action} على ${l.target} - ${l.details}`).join('<br>');}
+async function teleport(){let res=await fetch(API+"/api/teleport",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:tpId.value,targetId:tpTarget.value,admin:adminName})});alert((await res.json()).msg);}
+function backup(){ window.open(API+"/api/backup"); }
+async function broadcast(){let res=await fetch(API+"/api/broadcast",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({msg:broadcastMsg.value,admin:adminName})});alert((await res.json()).msg);}
 </script></body></html>
