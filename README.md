@@ -3,9 +3,9 @@
 .container{background:#1a1a1a;padding:20px;border-radius:15px;max-width:1100px;margin:auto;box-shadow:0 0 20px #00ff88}
 input,button,select{padding:10px;margin:5px;border-radius:8px;border:none}
 input{background:#2a2a2a;color:#fff;width:180px} button{background:#00ff88;color:#000;cursor:pointer;font-weight:bold}
-button.red{background:#ff4444} button.blue{background:#3399ff} button.orange{background:#ffaa00} button.purple{background:#aa00ff}
+button.red{background:#ff4444} button.blue{background:#3399ff} button.orange{background:#ffaa00} button.purple{background:#aa00ff} button.green{background:#00cc66}
 table{width:100%;margin-top:20px;border-collapse:collapse;font-size:13px} td,th{border:1px solid #333;padding:8px}
-#chatBox,#logBox{background:#000;padding:10px;height:200px;overflow-y:scroll;text-align:right;border-radius:8px}
+#chatBox,#logBox,#invBox,#globalChatBox{background:#000;padding:10px;overflow-y:scroll;text-align:right;border-radius:8px}
 .box{border:1px solid #333;padding:15px;margin:15px 0;border-radius:10px;background:#222}
 .stats{display:flex;justify-content:space-around;margin:15px 0;flex-wrap:wrap}
 .statBox{background:#2a2a2a;padding:15px;border-radius:10px;width:30%;min-width:120px;margin:5px}
@@ -54,11 +54,11 @@ h1{color:#00ff88} h3{color:#00ff88}
 
 <div class="box"><h3>9- عرض شات اللاعب</h3>
 <input id="chatId" placeholder="ID اللاعب"><button onclick="loadChat()">💬 عرض</button>
-<div id="chatBox">اكتب ID ودوس عرض</div></div>
+<div id="chatBox" style="height:200px">اكتب ID ودوس عرض</div></div>
 
 <div class="box"><h3>10- سجل الحظرات</h3>
 <button onclick="loadLogs()">📜 تحديث السجل</button>
-<div id="logBox">دوس تحديث السجل</div></div>
+<div id="logBox" style="height:200px">دوس تحديث السجل</div></div>
 
 <div class="box"><h3>11- تليبورت لاعب</h3>
 <input id="tpId" placeholder="ID اللاعب"><input id="tpTarget" placeholder="ID الهدف">
@@ -70,12 +70,24 @@ h1{color:#00ff88} h3{color:#00ff88}
 <div class="box"><h3>13- اعلان للكل</h3>
 <input id="broadcastMsg" placeholder="اكتب الاعلان هنا" style="width:60%">
 <button class="orange" onclick="broadcast()">📢 ارسال</button></div>
+
+<div class="box"><h3>14- عرض مخزن اللاعب</h3>
+<input id="invId" placeholder="ID اللاعب"><button class="purple" onclick="loadInv()">🎒 عرض</button>
+<div id="invBox" style="min-height:100px">اكتب ID ودوس عرض</div></div>
+
+<div class="box"><h3>15- حظر جهاز</h3>
+<input id="hwidId" placeholder="ID اللاعب"><input id="hwidVal" placeholder="HWID الجهاز">
+<button class="red" onclick="banHwid()">💻 حظر جهاز</button></div>
+
+<div class="box"><h3>16- الشات العام لايف</h3>
+<button class="green" onclick="loadGlobalChat()">📡 تحديث الشات</button>
+<div id="globalChatBox" style="height:250px">دوس تحديث الشات</div></div>
 </div></div>
 
 <script>
 const API = "https://shadowking-server.onrender.com";
 let adminName = "";
-async function login(){let res=await fetch(API+"/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:playerId.value,password:pass.value})});let data=await res.json();msg.innerHTML=data.msg;if(data.success){adminName=playerId.value;loginScreen.style.display='none';adminPanel.style.display='block';loadPlayers();loadStats();}}
+async function login(){let res=await fetch(API+"/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:playerId.value,password:pass.value,hwid:"PC-"+Math.random()})});let data=await res.json();msg.innerHTML=data.msg;if(data.success){adminName=playerId.value;loginScreen.style.display='none';adminPanel.style.display='block';loadPlayers();loadStats();}}
 async function loadStats(){let res=await fetch(API+"/api/stats");let data=await res.json();online.innerHTML=data.online;total.innerHTML=data.total;banned.innerHTML=data.banned;}
 async function loadPlayers(){let res=await fetch(API+"/api/players");let users=await res.json();window.allUsers=users;renderTable(users);}
 function renderTable(users){let table="<tr><th>ID</th><th>IP</th><th>فلوس</th><th>شات</th><th>الحالة</th><th>اخر دخول</th><th>فك</th></tr>";users.forEach(u=>{let status=u.banned?"<span style='color:red'>محظور</span>":"نشط";let chat=u.chatMuted?"<span style='color:orange'>مكتوم</span>":"مفتوح";let unban=u.banned?`<button onclick="unban('${u.playerId}')">فك</button>`:"-";table+=`<tr><td>${u.playerId}</td><td>${u.ip||'-'}</td><td>${u.money||0}</td><td>${chat}</td><td>${status}</td><td>${u.lastLogin?new Date(u.lastLogin).toLocaleString('ar-EG'):'-'}</td><td>${unban}</td></tr>`});playersTable.innerHTML=table;}
@@ -94,4 +106,7 @@ async function loadLogs(){let res=await fetch(API+"/api/logs");let logs=await re
 async function teleport(){let res=await fetch(API+"/api/teleport",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:tpId.value,targetId:tpTarget.value,admin:adminName})});alert((await res.json()).msg);}
 function backup(){ window.open(API+"/api/backup"); }
 async function broadcast(){let res=await fetch(API+"/api/broadcast",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({msg:broadcastMsg.value,admin:adminName})});alert((await res.json()).msg);}
+async function loadInv(){let res=await fetch(API+"/api/inventory/"+invId.value);let data=await res.json();invBox.innerHTML = data.inventory.length? data.inventory.map(i=>`${i.amount} x ${i.item}`).join('<br>') : "المخزن فاضي";}
+async function banHwid(){let res=await fetch(API+"/api/banhwid",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:hwidId.value,hwid:hwidVal.value,admin:adminName})});alert((await res.json()).msg);}
+async function loadGlobalChat(){let res=await fetch(API+"/api/globalchat");let data=await res.json();globalChatBox.innerHTML = data.chat.length? data.chat.join('<br>') : "لا يوجد رسائل";globalChatBox.scrollTop = globalChatBox.scrollHeight;}
 </script></body></html>
