@@ -11,8 +11,9 @@ table{width:100%;margin-top:20px;border-collapse:collapse;font-size:13px} td,th{
 .statBox{background:#2a2a2a;padding:15px;border-radius:10px;width:30%;min-width:120px;margin:5px}
 h1{color:#00ff88} h3{color:#00ff88}
 .jumpBar{position:sticky;top:0;background:#111;padding:10px;border-radius:10px;margin-bottom:20px;border:2px solid #00ff88}
+.vip{color:gold;font-weight:bold}
 </style></head><body>
-<div class="container"><h1>👑 لوحة تحكم ShadowKing V22</h1>
+<div class="container"><h1>👑 لوحة تحكم ShadowKing V25</h1>
 
 <div id="loginScreen"><h2>تسجيل الدخول</h2>
 <input id="playerId" value="SK_ADMIN_OMEGA_001"><br><input type="password" id="pass"><br>
@@ -21,7 +22,7 @@ h1{color:#00ff88} h3{color:#00ff88}
 <div id="adminPanel" style="display:none">
 
 <div class="jumpBar">
-<button class="yellow" onclick="document.getElementById('newFeatures').scrollIntoView()">⚡ اذهب للميزات الجديدة 14-22</button>
+<button class="yellow" onclick="document.getElementById('newFeatures').scrollIntoView()">⚡ اذهب للميزات الجديدة 14-25</button>
 </div>
 
 <button onclick="loadPlayers()">🔄 تحديث الكل</button>
@@ -46,7 +47,7 @@ h1{color:#00ff88} h3{color:#00ff88}
 <div class="box"><h3>12- نسخ احتياطي</h3><button class="blue" onclick="backup()">💾 تحميل النسخة</button></div>
 <div class="box"><h3>13- اعلان للكل</h3><input id="broadcastMsg" placeholder="اكتب الاعلان هنا" style="width:60%"><button class="orange" onclick="broadcast()">📢 ارسال</button></div>
 
-<div id="newFeatures" style="border:3px solid #00ff88;padding:10px;border-radius:10px;margin:20px 0;"><h2 style="color:#00ff88">⚡ الميزات الجديدة 14 - 22</h2></div>
+<div id="newFeatures" style="border:3px solid #00ff88;padding:10px;border-radius:10px;margin:20px 0;"><h2 style="color:#00ff88">⚡ الميزات الجديدة 14 - 25</h2></div>
 
 <div class="box"><h3>14- عرض مخزن اللاعب</h3><input id="invId" placeholder="ID اللاعب"><button class="purple" onclick="loadInv()">🎒 عرض</button><div id="invBox" style="min-height:100px">اكتب ID ودوس عرض</div></div>
 <div class="box"><h3>15- حظر جهاز</h3><input id="hwidId" placeholder="ID اللاعب"><input id="hwidVal" placeholder="HWID الجهاز"><button class="red" onclick="banHwid()">💻 حظر جهاز</button></div>
@@ -57,6 +58,9 @@ h1{color:#00ff88} h3{color:#00ff88}
 <div class="box"><h3>20- سحب فلوس من اللاعب</h3><input id="takeMoneyId" placeholder="ID اللاعب"><input id="takeMoneyAmount" type="number" placeholder="المبلغ"><button class="red" onclick="takeMoney()">💸 سحب</button></div>
 <div class="box"><h3>21- الكلمات الممنوعة</h3><input id="newWord" placeholder="ضيف كلمة ممنوعة"><button class="red" onclick="addWord()">🚫 اضافة</button><div id="wordsList" style="margin-top:10px;color:#ff4444">كس, شرموط, منيك</div></div>
 <div class="box"><h3>22- تتبع مكان اللاعب</h3><input id="trackId" placeholder="ID اللاعب"><button class="blue" onclick="trackPlayer()">📍 تتبع</button><div id="trackResult" style="margin-top:10px;color:#00ff88"></div></div>
+<div class="box"><h3>23- حظر سكن معين</h3><input id="banSkinId" placeholder="ID اللاعب"><input id="banSkinName" placeholder="اسم السكن"><button class="red" onclick="banSkin()">👕 حظر السكن</button></div>
+<div class="box"><h3>24- اعطاء VIP</h3><input id="vipId" placeholder="ID اللاعب"><select id="vipDays"><option value="7">7 ايام</option><option value="30">30 يوم</option><option value="999">دائم</option></select><button class="yellow" onclick="giveVip()">👑 اعطاء VIP</button></div>
+<div class="box"><h3>25- ريستارت وهمي للكل</h3><button class="orange" onclick="fakeRestart()">⚠️ تخويف السيرفر</button></div>
 </div></div>
 
 <script>
@@ -65,7 +69,7 @@ let adminName = ""; let words = ["كس", "شرموط", "منيك"];
 async function login(){let res=await fetch(API+"/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:playerId.value,password:pass.value,hwid:"PC-"+Math.random()})});let data=await res.json();msg.innerHTML=data.msg;if(data.success){adminName=playerId.value;loginScreen.style.display='none';adminPanel.style.display='block';loadPlayers();loadStats();}}
 async function loadStats(){let res=await fetch(API+"/api/stats");let data=await res.json();online.innerHTML=data.online;total.innerHTML=data.total;banned.innerHTML=data.banned;}
 async function loadPlayers(){let res=await fetch(API+"/api/players");let users=await res.json();window.allUsers=users;renderTable(users);}
-function renderTable(users){let table="<tr><th>ID</th><th>IP</th><th>لفل</th><th>فلوس</th><th>شات</th><th>الحالة</th><th>اخر دخول</th><th>فك</th></tr>";users.forEach(u=>{let status=u.banned?"<span style='color:red'>محظور</span>":"نشط";let chat=u.chatMuted?"<span style='color:orange'>مكتوم</span>":"مفتوح";let unban=u.banned?`<button onclick="unban('${u.playerId}')">فك</button>`:"-";table+=`<tr><td>${u.playerId}</td><td>${u.ip||'-'}</td><td>${u.level||1}</td><td>${u.money||0}</td><td>${chat}</td><td>${status}</td><td>${u.lastLogin?new Date(u.lastLogin).toLocaleString('ar-EG'):'-'}</td><td>${unban}</td></tr>`});playersTable.innerHTML=table;}
+function renderTable(users){let table="<tr><th>ID</th><th>IP</th><th>لفل</th><th>فلوس</th><th>VIP</th><th>شات</th><th>الحالة</th><th>اخر دخول</th><th>فك</th></tr>";users.forEach(u=>{let status=u.banned?"<span style='color:red'>محظور</span>":"نشط";let chat=u.chatMuted?"<span style='color:orange'>مكتوم</span>":"مفتوح";let vip=u.vip?"<span class='vip'>👑</span>":"-";let unban=u.banned?`<button onclick="unban('${u.playerId}')">فك</button>`:"-";table+=`<tr><td>${u.playerId}</td><td>${u.ip||'-'}</td><td>${u.level||1}</td><td>${u.money||0}</td><td>${vip}</td><td>${chat}</td><td>${status}</td><td>${u.lastLogin?new Date(u.lastLogin).toLocaleString('ar-EG'):'-'}</td><td>${unban}</td></tr>`});playersTable.innerHTML=table;}
 function searchPlayer(){let val=search.value.toLowerCase();renderTable(window.allUsers.filter(u=>u.playerId.toLowerCase().includes(val)));}
 async function banPlayer(){let res=await fetch(API+"/api/ban",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:banId.value,days:parseInt(banDays.value),admin:adminName})});alert((await res.json()).msg);loadPlayers();}
 async function banIp(){let res=await fetch(API+"/api/banip",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:banIpId.value,admin:adminName})});alert((await res.json()).msg);}
@@ -90,4 +94,7 @@ async function tempMute(){let res=await fetch(API+"/api/tempmute",{method:"POST"
 async function takeMoney(){let res=await fetch(API+"/api/takemoney",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:takeMoneyId.value,amount:takeMoneyAmount.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
 function addWord(){if(newWord.value &&!words.includes(newWord.value)){words.push(newWord.value);wordsList.innerHTML = words.join(", ");newWord.value = "";alert("✅ تم اضافة الكلمة");}}
 async function trackPlayer(){let res=await fetch(API+"/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:trackId.value,admin:adminName})});let data=await res.json();trackResult.innerHTML = data.success? data.msg : "❌ اللاعب مش موجود";}
+async function banSkin(){let res=await fetch(API+"/api/banskin",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:banSkinId.value,skin:banSkinName.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
+async function giveVip(){let res=await fetch(API+"/api/givevip",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:vipId.value,days:parseInt(vipDays.value),admin:adminName})});alert((await res.json()).msg);loadPlayers();}
+async function fakeRestart(){if(confirm("متاكد بدك تخوف السيرفر كله؟")){let res=await fetch(API+"/api/fakerestart",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({admin:adminName})});alert((await res.json()).msg);}}
 </script></body></html>

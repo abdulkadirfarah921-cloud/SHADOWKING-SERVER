@@ -6,6 +6,8 @@
     "hwid": "",
     "level": 100,
     "pos": {"x": 0, "y": 0, "z": 0},
+    "vip": false,
+    "vipUntil": null,
     "banned": false,
     "banUntil": null,
     "bannedIps": [],
