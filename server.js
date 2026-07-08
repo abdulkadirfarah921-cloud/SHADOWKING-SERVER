@@ -26,7 +26,7 @@ app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); }
 
 // 1- تسجيل دخول
 app.post('/api/login', (req, res) => {
-    let {playerId, password} = req.body;
+    let {playerId, password, hwid} = req.body; // ضفنا hwid
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     if(ip.includes(',')) ip = ip.split(',')[0].trim();
     if(ip === '::1') ip = '127.0.0.1';
@@ -34,10 +34,11 @@ app.post('/api/login', (req, res) => {
     let users = readDB(); let user = users.find(u => u.playerId === playerId && u.password === password);
     if(!user) return res.json({success: false, msg: "❌ ال ID او كلمة السر غلط"});
     if(user.bannedIps && user.bannedIps.includes(ip)) return res.json({success: false, msg: "🚫 IP تبعك محظور"});
+    if(user.bannedHwids && user.bannedHwids.includes(hwid)) return res.json({success: false, msg: "🚫 جهازك محظور"});
     if(user.banned && user.banUntil > Date.now()) return res.json({success: false, msg: `🚫 محظور لحد ${new Date(user.banUntil).toLocaleString('ar-EG')}`});
     if(user.banned && user.banUntil < Date.now()){ user.banned = false; user.banUntil = null; }
 
-    user.ip = ip; user.lastLogin = Date.now(); user.chatMuted = user.chatMuted || false;
+    user.ip = ip; user.hwid = hwid; user.lastLogin = Date.now(); user.chatMuted = user.chatMuted || false;
     saveDB(users); res.json({success: true, msg: "✅ تم الدخول"});
 });
 
@@ -165,6 +166,34 @@ app.post('/api/broadcast', (req, res) => {
     saveDB(users);
     saveLog("اعلان", admin, "الكل", msg);
     res.json({success: true, msg: `✅ تم ارسال الاعلان للكل`});
+});
+
+// 18- عرض مخزن اللاعب
+app.get('/api/inventory/:playerId', (req, res) => {
+    let users = readDB();
+    let user = users.find(u => u.playerId === req.params.playerId);
+    res.json({success: true, inventory: user? user.inventory : []});
+});
+
+// 19- حظر HWID
+app.post('/api/banhwid', (req, res) => {
+    let {playerId, hwid, admin} = req.body;
+    let users = readDB();
+    let user = users.find(u => u.playerId === playerId);
+    if(!user) return res.json({success: false});
+    if(!user.bannedHwids) user.bannedHwids = [];
+    if(!user.bannedHwids.includes(hwid)) user.bannedHwids.push(hwid);
+    saveDB(users);
+    saveLog("حظر HWID", admin, playerId, hwid);
+    res.json({success: true, msg: `✅ تم حظر جهاز: ${hwid}`});
+});
+
+// 20- الشات العام
+app.get('/api/globalchat', (req, res) => {
+    let users = readDB();
+    let allChat = [];
+    users.forEach(u => { if(u.chat) allChat = allChat.concat(u.chat); });
+    res.json({success: true, chat: allChat.slice(-100)});
 });
 
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
