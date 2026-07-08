@@ -12,7 +12,7 @@ table{width:100%;margin-top:20px;border-collapse:collapse;font-size:13px} td,th{
 h1{color:#00ff88} h3{color:#00ff88}
 .jumpBar{position:sticky;top:0;background:#111;padding:10px;border-radius:10px;margin-bottom:20px;border:2px solid #00ff88}
 </style></head><body>
-<div class="container"><h1>👑 لوحة تحكم ShadowKing V19</h1>
+<div class="container"><h1>👑 لوحة تحكم ShadowKing V22</h1>
 
 <div id="loginScreen"><h2>تسجيل الدخول</h2>
 <input id="playerId" value="SK_ADMIN_OMEGA_001"><br><input type="password" id="pass"><br>
@@ -20,9 +20,8 @@ h1{color:#00ff88} h3{color:#00ff88}
 
 <div id="adminPanel" style="display:none">
 
-<!-- زر القفز الجديد -->
 <div class="jumpBar">
-<button class="yellow" onclick="document.getElementById('newFeatures').scrollIntoView()">⚡ اذهب للميزات الجديدة 14-19</button>
+<button class="yellow" onclick="document.getElementById('newFeatures').scrollIntoView()">⚡ اذهب للميزات الجديدة 14-22</button>
 </div>
 
 <button onclick="loadPlayers()">🔄 تحديث الكل</button>
@@ -34,83 +33,35 @@ h1{color:#00ff88} h3{color:#00ff88}
 </div>
 
 <div class="box"><h3>1- ادارة اللاعبين</h3><input id="search" placeholder="ابحث عن ID" onkeyup="searchPlayer()"><table id="playersTable"></table></div>
+<div class="box"><h3>2- حظر ID</h3><input id="banId" placeholder="ID اللاعب"><select id="banDays"><option value="1">يوم</option><option value="7">اسبوع</option><option value="30">30 يوم</option><option value="999">دائم</option></select><button class="red" onclick="banPlayer()">🔨 حظر</button></div>
+<div class="box"><h3>3- حظر IP</h3><input id="banIpId" placeholder="ID اللاعب"><button class="red" onclick="banIp()">🔥 حظر IP</button></div>
+<div class="box"><h3>4- طرد لاعب</h3><input id="kickId" placeholder="ID اللاعب"><button class="orange" onclick="kick()">👢 طرد</button></div>
+<div class="box"><h3>5- اعطاء فلوس</h3><input id="moneyId" placeholder="ID اللاعب"><input id="moneyAmount" type="number" placeholder="المبلغ"><button class="blue" onclick="giveMoney()">💰 اعطاء</button></div>
+<div class="box"><h3>6- اعطاء ايتم</h3><input id="itemId" placeholder="ID اللاعب"><input id="itemName" placeholder="اسم الايتم"><input id="itemAmount" type="number" placeholder="الكمية"><button class="purple" onclick="giveItem()">🎁 اعطاء</button></div>
+<div class="box"><h3>7- بان شات</h3><input id="muteId" placeholder="ID اللاعب"><button class="orange" onclick="muteChat()">🔇 كتم دائم</button><button class="blue" onclick="unmuteChat()">🔊 فك كتم</button></div>
+<div class="box"><h3>8- ارسال رسالة</h3><input id="msgId" placeholder="ID اللاعب"><input id="msgText" placeholder="الرسالة"><button class="blue" onclick="sendMsg()">📨 ارسال</button></div>
+<div class="box"><h3>9- عرض شات اللاعب</h3><input id="chatId" placeholder="ID اللاعب"><button onclick="loadChat()">💬 عرض</button><div id="chatBox" style="height:200px">اكتب ID ودوس عرض</div></div>
+<div class="box"><h3>10- سجل الحظرات</h3><button onclick="loadLogs()">📜 تحديث السجل</button><div id="logBox" style="height:200px">دوس تحديث السجل</div></div>
+<div class="box"><h3>11- تليبورت لاعب</h3><input id="tpId" placeholder="ID اللاعب"><input id="tpTarget" placeholder="ID الهدف"><button class="purple" onclick="teleport()">🚀 سحب</button></div>
+<div class="box"><h3>12- نسخ احتياطي</h3><button class="blue" onclick="backup()">💾 تحميل النسخة</button></div>
+<div class="box"><h3>13- اعلان للكل</h3><input id="broadcastMsg" placeholder="اكتب الاعلان هنا" style="width:60%"><button class="orange" onclick="broadcast()">📢 ارسال</button></div>
 
-<div class="box"><h3>2- حظر ID</h3>
-<input id="banId" placeholder="ID اللاعب"><select id="banDays"><option value="1">يوم</option><option value="7">اسبوع</option><option value="30">30 يوم</option><option value="999">دائم</option></select>
-<button class="red" onclick="banPlayer()">🔨 حظر</button></div>
+<div id="newFeatures" style="border:3px solid #00ff88;padding:10px;border-radius:10px;margin:20px 0;"><h2 style="color:#00ff88">⚡ الميزات الجديدة 14 - 22</h2></div>
 
-<div class="box"><h3>3- حظر IP</h3>
-<input id="banIpId" placeholder="ID اللاعب"><button class="red" onclick="banIp()">🔥 حظر IP</button></div>
-
-<div class="box"><h3>4- طرد لاعب</h3>
-<input id="kickId" placeholder="ID اللاعب"><button class="orange" onclick="kick()">👢 طرد</button></div>
-
-<div class="box"><h3>5- اعطاء فلوس</h3>
-<input id="moneyId" placeholder="ID اللاعب"><input id="moneyAmount" type="number" placeholder="المبلغ">
-<button class="blue" onclick="giveMoney()">💰 اعطاء</button></div>
-
-<div class="box"><h3>6- اعطاء ايتم</h3>
-<input id="itemId" placeholder="ID اللاعب"><input id="itemName" placeholder="اسم الايتم"><input id="itemAmount" type="number" placeholder="الكمية">
-<button class="purple" onclick="giveItem()">🎁 اعطاء</button></div>
-
-<div class="box"><h3>7- بان شات</h3>
-<input id="muteId" placeholder="ID اللاعب"><button class="orange" onclick="muteChat()">🔇 كتم دائم</button><button class="blue" onclick="unmuteChat()">🔊 فك كتم</button></div>
-
-<div class="box"><h3>8- ارسال رسالة</h3>
-<input id="msgId" placeholder="ID اللاعب"><input id="msgText" placeholder="الرسالة">
-<button class="blue" onclick="sendMsg()">📨 ارسال</button></div>
-
-<div class="box"><h3>9- عرض شات اللاعب</h3>
-<input id="chatId" placeholder="ID اللاعب"><button onclick="loadChat()">💬 عرض</button>
-<div id="chatBox" style="height:200px">اكتب ID ودوس عرض</div></div>
-
-<div class="box"><h3>10- سجل الحظرات</h3>
-<button onclick="loadLogs()">📜 تحديث السجل</button>
-<div id="logBox" style="height:200px">دوس تحديث السجل</div></div>
-
-<div class="box"><h3>11- تليبورت لاعب</h3>
-<input id="tpId" placeholder="ID اللاعب"><input id="tpTarget" placeholder="ID الهدف">
-<button class="purple" onclick="teleport()">🚀 سحب</button></div>
-
-<div class="box"><h3>12- نسخ احتياطي</h3>
-<button class="blue" onclick="backup()">💾 تحميل النسخة</button></div>
-
-<div class="box"><h3>13- اعلان للكل</h3>
-<input id="broadcastMsg" placeholder="اكتب الاعلان هنا" style="width:60%">
-<button class="orange" onclick="broadcast()">📢 ارسال</button></div>
-
-<!-- الميزات الجديدة تبدا من هنا -->
-<div id="newFeatures" style="border:3px solid #00ff88;padding:10px;border-radius:10px;margin:20px 0;">
-<h2 style="color:#00ff88">⚡ الميزات الجديدة 14 - 19</h2>
-</div>
-
-<div class="box"><h3>14- عرض مخزن اللاعب</h3>
-<input id="invId" placeholder="ID اللاعب"><button class="purple" onclick="loadInv()">🎒 عرض</button>
-<div id="invBox" style="min-height:100px">اكتب ID ودوس عرض</div></div>
-
-<div class="box"><h3>15- حظر جهاز</h3>
-<input id="hwidId" placeholder="ID اللاعب"><input id="hwidVal" placeholder="HWID الجهاز">
-<button class="red" onclick="banHwid()">💻 حظر جهاز</button></div>
-
-<div class="box"><h3>16- الشات العام لايف</h3>
-<button class="green" onclick="loadGlobalChat()">📡 تحديث الشات</button>
-<div id="globalChatBox" style="height:250px">دوس تحديث الشات</div></div>
-
-<div class="box"><h3>17- تعديل لفل اللاعب</h3>
-<input id="levelId" placeholder="ID اللاعب"><input id="levelVal" type="number" placeholder="اللفل الجديد">
-<button class="purple" onclick="setLevel()">⭐ تعديل</button></div>
-
-<div class="box"><h3>18- اعادة تشغيل السيرفر</h3>
-<button class="red" onclick="restartServer()">🔄 ريستارت</button></div>
-
-<div class="box"><h3>19- كتم شات مؤقت</h3>
-<input id="tempMuteId" placeholder="ID اللاعب"><input id="muteMinutes" type="number" placeholder="عدد الدقايق">
-<button class="orange" onclick="tempMute()">⏰ كتم مؤقت</button></div>
+<div class="box"><h3>14- عرض مخزن اللاعب</h3><input id="invId" placeholder="ID اللاعب"><button class="purple" onclick="loadInv()">🎒 عرض</button><div id="invBox" style="min-height:100px">اكتب ID ودوس عرض</div></div>
+<div class="box"><h3>15- حظر جهاز</h3><input id="hwidId" placeholder="ID اللاعب"><input id="hwidVal" placeholder="HWID الجهاز"><button class="red" onclick="banHwid()">💻 حظر جهاز</button></div>
+<div class="box"><h3>16- الشات العام لايف</h3><button class="green" onclick="loadGlobalChat()">📡 تحديث الشات</button><div id="globalChatBox" style="height:250px">دوس تحديث الشات</div></div>
+<div class="box"><h3>17- تعديل لفل اللاعب</h3><input id="levelId" placeholder="ID اللاعب"><input id="levelVal" type="number" placeholder="اللفل الجديد"><button class="purple" onclick="setLevel()">⭐ تعديل</button></div>
+<div class="box"><h3>18- اعادة تشغيل السيرفر</h3><button class="red" onclick="restartServer()">🔄 ريستارت</button></div>
+<div class="box"><h3>19- كتم شات مؤقت</h3><input id="tempMuteId" placeholder="ID اللاعب"><input id="muteMinutes" type="number" placeholder="عدد الدقايق"><button class="orange" onclick="tempMute()">⏰ كتم مؤقت</button></div>
+<div class="box"><h3>20- سحب فلوس من اللاعب</h3><input id="takeMoneyId" placeholder="ID اللاعب"><input id="takeMoneyAmount" type="number" placeholder="المبلغ"><button class="red" onclick="takeMoney()">💸 سحب</button></div>
+<div class="box"><h3>21- الكلمات الممنوعة</h3><input id="newWord" placeholder="ضيف كلمة ممنوعة"><button class="red" onclick="addWord()">🚫 اضافة</button><div id="wordsList" style="margin-top:10px;color:#ff4444">كس, شرموط, منيك</div></div>
+<div class="box"><h3>22- تتبع مكان اللاعب</h3><input id="trackId" placeholder="ID اللاعب"><button class="blue" onclick="trackPlayer()">📍 تتبع</button><div id="trackResult" style="margin-top:10px;color:#00ff88"></div></div>
 </div></div>
 
 <script>
 const API = "https://shadowking-server.onrender.com";
-let adminName = "";
+let adminName = ""; let words = ["كس", "شرموط", "منيك"];
 async function login(){let res=await fetch(API+"/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:playerId.value,password:pass.value,hwid:"PC-"+Math.random()})});let data=await res.json();msg.innerHTML=data.msg;if(data.success){adminName=playerId.value;loginScreen.style.display='none';adminPanel.style.display='block';loadPlayers();loadStats();}}
 async function loadStats(){let res=await fetch(API+"/api/stats");let data=await res.json();online.innerHTML=data.online;total.innerHTML=data.total;banned.innerHTML=data.banned;}
 async function loadPlayers(){let res=await fetch(API+"/api/players");let users=await res.json();window.allUsers=users;renderTable(users);}
@@ -136,4 +87,7 @@ async function loadGlobalChat(){let res=await fetch(API+"/api/globalchat");let d
 async function setLevel(){let res=await fetch(API+"/api/setlevel",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:levelId.value,level:levelVal.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
 async function restartServer(){if(confirm("متاكد بدك تعمل ريستارت للسيرفر؟")){let res=await fetch(API+"/api/restart",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({admin:adminName})});alert((await res.json()).msg);}}
 async function tempMute(){let res=await fetch(API+"/api/tempmute",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:tempMuteId.value,minutes:parseInt(muteMinutes.value),admin:adminName})});alert((await res.json()).msg);loadPlayers();}
+async function takeMoney(){let res=await fetch(API+"/api/takemoney",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:takeMoneyId.value,amount:takeMoneyAmount.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
+function addWord(){if(newWord.value &&!words.includes(newWord.value)){words.push(newWord.value);wordsList.innerHTML = words.join(", ");newWord.value = "";alert("✅ تم اضافة الكلمة");}}
+async function trackPlayer(){let res=await fetch(API+"/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:trackId.value,admin:adminName})});let data=await res.json();trackResult.innerHTML = data.success? data.msg : "❌ اللاعب مش موجود";}
 </script></body></html>
