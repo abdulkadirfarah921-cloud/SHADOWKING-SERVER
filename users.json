@@ -2,35 +2,17 @@
   {
     "playerId": "SK_ADMIN_OMEGA_001",
     "password": "SK#9zQ!vL2@xP_7KqW",
-    "ip": "127.0.0.1",
+    "ip": "0.0.0.0",
     "banned": false,
     "banUntil": null,
     "bannedIps": [],
     "kicked": false,
+    "chatMuted": false,
     "lastLogin": 0,
     "money": 999999,
-    "chat": [
-      "[2026/7/7 4:14] مرحبا انا الادمن",
-      "[2026/7/7 4:15] تم تجربة السيرفر"
-    ],
-    "messages": [
-      "[Admin]: اهلا وسهلا في السيرفر"
-    ]
-  },
-  {
-    "playerId": "PLAYER_TEST_001",
-    "password": "123456",
-    "ip": "192.168.1.10",
-    "banned": false,
-    "banUntil": null,
-    "bannedIps": [],
-    "kicked": false,
-    "lastLogin": 0,
-    "money": 5000,
-    "chat": [
-      "[2026/7/7 4:10] السلام عليكم",
-      "[2026/7/7 4:11] حد معاه سلاح؟"
-    ],
+    "inventory": [],
+    "teleport": {},
+    "chat": [],
     "messages": []
   }
 ]

@@ -49,7 +49,7 @@ app.get('/api/stats', (req, res) => {
     let users = readDB();
     res.json({
         total: users.length,
-        online: users.filter(u => Date.now() - u.lastLogin < 300000).length, // اخر 5 دقايق
+        online: users.filter(u => Date.now() - u.lastLogin < 300000).length,
         banned: users.filter(u => u.banned).length
     });
 });
@@ -135,5 +135,36 @@ app.get('/api/chat/:playerId', (req, res) => {
 
 // 14- جلب سجل الحظرات
 app.get('/api/logs', (req, res) => { res.json(readLogs()); });
+
+// 15- تليبورت لاعب
+app.post('/api/teleport', (req, res) => {
+    let {playerId, targetId, admin} = req.body;
+    let users = readDB();
+    let user = users.find(u => u.playerId === playerId);
+    if(!user) return res.json({success: false});
+    if(!user.teleport) user.teleport = {};
+    user.teleport.to = targetId;
+    saveDB(users);
+    saveLog("تليبورت", admin, playerId, `الى ${targetId}`);
+    res.json({success: true, msg: `✅ تم سحب ${playerId} الى ${targetId}`});
+});
+
+// 16- نسخ احتياطي
+app.get('/api/backup', (req, res) => {
+    res.download(DB_PATH, 'users_backup.json');
+});
+
+// 17- اعلان للكل
+app.post('/api/broadcast', (req, res) => {
+    let {msg, admin} = req.body;
+    let users = readDB();
+    users.forEach(u => {
+        if(!u.messages) u.messages = [];
+        u.messages.push(`[📢 اعلان]: ${msg}`);
+    });
+    saveDB(users);
+    saveLog("اعلان", admin, "الكل", msg);
+    res.json({success: true, msg: `✅ تم ارسال الاعلان للكل`});
+});
 
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
