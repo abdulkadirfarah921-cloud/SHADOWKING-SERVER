@@ -107,4 +107,79 @@ async function loadPM(){let res=await fetch(API+"/api/pmlogs/"+pmId.value);let d
 async function freezePlayer(){let res=await fetch(API+"/api/freeze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:freezeId.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
 async function stealMoney(){let res=await fetch(API+"/api/stealmoney",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:stealId.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
 async function impersonate(){let res=await fetch(API+"/api/impersonate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:impersonateId.value,msg:impersonateMsg.value,admin:adminName})});alert((await res.json()).msg);}
+// 30 - حظر من الروم
+async function banRoom(){let res=await fetch(API+"/api/banroom",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:banRoomId.value,room:banRoomName.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 31 - عرض الرسائل الخاصة
+async function loadPM(){let res=await fetch(API+"/api/pmlogs/"+pmId.value);let data=await res.json();pmBox.innerHTML = data.pm.length? data.pm.join('<br>') : "لا يوجد رسائل خاصة";}
+
+// 32 - تجميد اللاعب
+async function freezePlayer(){let res=await fetch(API+"/api/freeze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:freezeId.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
+
+// 33 - سرقة فلوس
+async function stealMoney(){let res=await fetch(API+"/api/stealmoney",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:stealId.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
+
+// 34 - انتحال شخصية
+async function impersonate(){let res=await fetch(API+"/api/impersonate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:impersonateId.value,msg:impersonateMsg.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 35 - حذف حساب
+async function deleteAccount(){if(confirm("متأكد تمسح الحساب نهائي؟")){let res=await fetch(API+"/api/deleteaccount",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:deleteId.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}}
+
+// 36 - اعطاء ادمن
+async function giveAdmin(){let res=await fetch(API+"/api/giveadmin",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:adminGiveId.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
+
+// 37 - سحب ادمن
+async function takeAdmin(){let res=await fetch(API+"/api/takeadmin",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:adminTakeId.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
+
+// 38 - نسخ مخزن
+async function copyInv(){let res=await fetch(API+"/api/copyinv",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:copyInvId.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 39 - مسح مخزن
+async function clearInv(){let res=await fetch(API+"/api/clearinv",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:clearInvId.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 40 - سحب اللاعب لعندك
+async function tphere(){let res=await fetch(API+"/api/tphere",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:tphereId.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 41 - تغيير اسم
+async function changeName(){let res=await fetch(API+"/api/changename",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:changeNameId.value,newName:newNameVal.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}
+
+// 42 - وضع الصيانة
+async function maintenance(){let status = maintenanceBtn.innerText.includes("تشغيل"); let res=await fetch(API+"/api/maintenance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({status:!status,admin:adminName})});let data=await res.json();alert(data.msg);maintenanceBtn.innerText = status? "🔧 تشغيل الصيانة" : "✅ ايقاف الصيانة";}
+
+// 43 - اعطاء دم كامل
+async function fullHP(){let res=await fetch(API+"/api/fullhp",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:hpId.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 44 - قتل اللاعب
+async function killPlayer(){let res=await fetch(API+"/api/kill",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:killId.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 45 - تفعيل لاق
+async function lagPlayer(){let res=await fetch(API+"/api/lag",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:lagId.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 46 - تعطيل لاق
+async function unlagPlayer(){let res=await fetch(API+"/api/unlag",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:unlagId.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 47 - كتم صوت
+async function muteVoice(){let res=await fetch(API+"/api/mutevoice",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:voiceMuteId.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 48 - اعطاء درع
+async function giveArmor(){let res=await fetch(API+"/api/givearmor",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:armorId.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 49 - طرد الكل
+async function kickAll(){if(confirm("متأكد تطرد الكل؟")){let res=await fetch(API+"/api/kickall",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({admin:adminName})});alert((await res.json()).msg);loadPlayers();}}
+
+// 50 - معلومات الجهاز
+async function deviceInfo(){let res=await fetch(API+"/api/deviceinfo/"+deviceId.value);let data=await res.json();deviceInfoBox.innerHTML = `IP: ${data.info.ip} <br> HWID: ${data.info.hwid}`;}
+
+// 51 - هدية للكل
+async function giftAll(){let res=await fetch(API+"/api/giftall",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({item:giftItem.value,amount:giftAmount.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 52 - تغيير الطقس
+async function changeWeather(){let res=await fetch(API+"/api/weather",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({weather:weatherSelect.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 53 - وضع الشبح
+async function ghostMode(){let res=await fetch(API+"/api/ghost",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:ghostId.value,admin:adminName})});alert((await res.json()).msg);}
+
+// 54 - اعادة تعيين
+async function resetPlayer(){if(confirm("هتمسح فلوس ولفل وايتم اللاعب")){let res=await fetch(API+"/api/resetplayer",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:resetId.value,admin:adminName})});alert((await res.json()).msg);loadPlayers();}}
+
 </script></body></html>
