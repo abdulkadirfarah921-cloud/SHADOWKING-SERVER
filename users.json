@@ -1,1 +1,11 @@
-[{"playerId":"SK_ADMIN_OMEGA_001","password":"SK#9zQ!vL2@xP_7KqW","role":"admin","money":999,"level":100,"vip":false,"banned":false}
+[
+  {
+    "playerId": "SK_ADMIN_OMEGA_001",
+    "password": "SK#9zQ!vL2@xP_7KqW",
+    "role": "admin",
+    "money": 999,
+    "level": 100,
+    "vip": true,
+    "banned": false
+  }
+]
