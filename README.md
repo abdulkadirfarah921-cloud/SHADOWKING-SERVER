@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>👑 لوحة تحكم ShadowKing V40</title>
+<title>👑 لوحة تحكم ShadowKing V50</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box} 
-body{background:linear-gradient(135deg,#0a0a0a,#1a0033);color:#fff;font-family:'Tahoma';min-height:100vh;padding:15px}
-.container{max-width:1400px;margin:0 auto;background:rgba(20,20,20,0.95);border-radius:20px;padding:20px;border:2px solid #00ff88;box-shadow:0 0 30px #00ff88}
+body{background:linear-gradient(135deg,#0a0a0a,#1a0033);color:#fff;font-family:'Tahoma';min-height:100vh;padding:15px;transition:0.5s}
+body.hacker{background:linear-gradient(135deg,#0a0a0a,#33001a)}
+.container{max-width:1500px;margin:0 auto;background:rgba(20,20,20,0.95);border-radius:20px;padding:20px;border:2px solid #00ff88;box-shadow:0 0 30px #00ff88}
 h1{text-align:center;color:#00ff88;text-shadow:0 0 10px #00ff88;margin-bottom:15px;font-size:24px}
 .login-box{text-align:center;padding:40px} 
 input,select{padding:10px;margin:5px;border-radius:8px;border:2px solid #00ff88;background:#111;color:#fff;width:200px;outline:none}
@@ -33,7 +34,7 @@ th{background:#00ff88;color:#000;font-weight:bold}
 </head>
 <body>
 <div class="container">
-<h1>👑 لوحة تحكم ShadowKing V40</h1>
+<h1>👑 لوحة تحكم ShadowKing V50</h1>
 
 <div id="loginScreen" class="login-box">
 <h2>🔐 تسجيل دخول الادمن</h2>
@@ -44,6 +45,7 @@ th{background:#00ff88;color:#000;font-weight:bold}
 
 <div id="adminPanel" style="display:none">
 <button onclick="loadAll()">🔄 تحديث الكل</button> 
+<button class="purple" onclick="toggleTheme()">🎨 تبديل الثيم</button>
 <button class="red" onclick="logout()">🚪 خروج</button>
 <div class="stats">
 <div class="statCard"><h3>اجمالي اللاعبين</h3><h2 id="total">0</h2></div>
@@ -100,6 +102,18 @@ th{background:#00ff88;color:#000;font-weight:bold}
 <div class="box"><h3>38. تغيير سكن</h3><input id="skinId" placeholder="ID"><input id="skinName" placeholder="اسم السكن"><button onclick="changeSkin()">👕 تغيير</button></div>
 <div class="box"><h3>39. تعطيل التسجيل</h3><button class="red" onclick="disableRegister()">🔒 تعطيل</button></div>
 <div class="box"><h3>40. طرد الكل</h3><button class="red" onclick="kickAll()">💣 طرد جماعي</button></div>
+
+<!-- 41-50 V50 الجديد -->
+<div class="box"><h3>41. وضع الشبح</h3><button class="purple" onclick="ghostMode()">👻 تفعيل</button></div>
+<div class="box"><h3>42. نسخ كل اللاعبين</h3><button class="blue" onclick="cloneAll()">📋 نسخ الكل</button></div>
+<div class="box"><h3>43. بان اي بي</h3><input id="banIpId" placeholder="ID"><button class="red" onclick="banIP()">🌐 بان IP</button></div>
+<div class="box"><h3>44. رسالة مزيفة</h3><input id="fakeMsgId" placeholder="ID"><input id="fakeMsgText" placeholder="الرسالة"><button class="yellow" onclick="fakeMsg()">📩 مزيف</button></div>
+<div class="box"><h3>45. تفجير السيرفر</h3><button class="red" onclick="nukeServer()">💥 NUKED</button></div>
+<div class="box"><h3>46. رؤية مخفية</h3><input id="seeId" placeholder="ID"><button onclick="seeThrough()">👁️ تجسس</button></div>
+<div class="box"><h3>47. تحويل لاعب لبوت</h3><input id="botPlayerId" placeholder="ID"><button class="purple" onclick="makeBot()">🤖 تحويل</button></div>
+<div class="box"><h3>48. سجل الدخول</h3><button class="blue" onclick="loadLoginLogs()">📜 تحميل</button><div id="loginLogBox" class="logBox"></div></div>
+<div class="box"><h3>49. حماية ضد الهكر</h3><button class="yellow" onclick="antiHack()">🛡️ تفعيل</button></div>
+<div class="box"><h3>50. معلومات السيرفر</h3><button onclick="serverInfo()">📊 معلومات</button><div id="serverInfoBox"></div></div>
 </div>
 </div>
 </div>
@@ -109,7 +123,9 @@ const API = ""; // حط هنا رابط رندر بتاعك: https://shadowking-
 let adminName = ""; 
 let words = ["منيك","شرموط","كس"];
 let botInterval;
+let isHackerTheme = false;
 
+// تسجيل الدخول
 async function login(){
   let res=await fetch(API+"/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:playerId.value,password:pass.value})});
   let data=await res.json();msg.innerHTML=data.msg;
@@ -122,6 +138,7 @@ async function loadPlayers(){let res=await fetch(API+"/api/players");let users=a
 function renderTable(users){let table="<tr><th>ID</th><th>فلوس</th><th>لفل</th><th>حالة</th></tr>";users.forEach(u=>{table+=`<tr><td>${u.playerId}</td><td>${u.money||0}</td><td>${u.level||1}</td><td>${u.banned?"محظور":"نشط"}</td></tr>`});playersTable.innerHTML=table;}
 function searchPlayer(){let val=search.value.toLowerCase();renderTable(window.allUsers.filter(u=>u.playerId.toLowerCase().includes(val)));}
 
+// 1-40
 async function banPlayer(){await fetch(API+"/api/ban",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:banId.value,days:parseInt(banDays.value),admin:adminName})});alert("✅ تم الحظر");loadPlayers();}
 async function kick(){await fetch(API+"/api/kick",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:kickId.value,admin:adminName})});alert("✅ تم الطرد");}
 async function giveMoney(){await fetch(API+"/api/givemoney",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:moneyId.value,amount:moneyAmount.value,admin:adminName})});alert("✅ تم");loadPlayers();}
@@ -152,8 +169,6 @@ async function freezePlayer(){await fetch(API+"/api/freeze",{method:"POST",heade
 async function stealMoney(){await fetch(API+"/api/stealmoney",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:stealId.value,admin:adminName})});alert("✅ تمت السرقة");loadPlayers();}
 async function impersonate(){await fetch(API+"/api/impersonate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:impersonateId.value,msg:impersonateMsg.value,admin:adminName})});alert("✅ تم");}
 async function deleteAccount(){await fetch(API+"/api/deleteaccount",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:deleteId.value,admin:adminName})});alert("✅ تم الحذف");loadPlayers();}
-
-// 31-40
 async function clonePlayer(){await fetch(API+"/api/clone",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:cloneId.value,admin:adminName})});alert("✅ تم النسخ");loadPlayers();}
 async function swapNames(){await fetch(API+"/api/swapnames",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id1:swapId1.value,id2:swapId2.value,admin:adminName})});alert("✅ تم التبديل");}
 function startBot(){botInterval=setInterval(()=>{fetch(API+"/api/broadcast",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({msg:botMsg.value,admin:adminName})})},5000);alert("🤖 البوت اشتغل");}
@@ -165,4 +180,17 @@ async function spamChat(){for(let i=0;i<10;i++){await fetch(API+"/api/sendmsg",{
 async function changeSkin(){await fetch(API+"/api/changeskin",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:skinId.value,skin:skinName.value,admin:adminName})});alert("✅ تم التغيير");}
 async function disableRegister(){await fetch(API+"/api/disableregister",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({admin:adminName})});alert("🔒 تم تعطيل التسجيل");}
 async function kickAll(){await fetch(API+"/api/kickall",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({admin:adminName})});alert("💣 تم طرد الكل");}
+
+// 41-50 V50
+async function ghostMode(){await fetch(API+"/api/ghost",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({admin:adminName})});alert("👻 وضع الشبح مفعل");}
+async function cloneAll(){await fetch(API+"/api/cloneall",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({admin:adminName})});alert("📋 تم نسخ الكل");}
+async function banIP(){await fetch(API+"/api/banip",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:banIpId.value,admin:adminName})});alert("🌐 تم بان IP");}
+async function fakeMsg(){await fetch(API+"/api/fakemsg",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:fakeMsgId.value,msg:fakeMsgText.value,admin:adminName})});alert("📩 تم الارسال");}
+async function nukeServer(){if(confirm("متأكد؟ هيطرد الكل ويمسح الداتا")){await fetch(API+"/api/nuke",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({admin:adminName})});alert("💥 السيرفر اتفجر");}}
+async function seeThrough(){await fetch(API+"/api/seethrough",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:seeId.value,admin:adminName})});alert("👁️ تقدر تشوف شاشته");}
+async function makeBot(){await fetch(API+"/api/makebot",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({playerId:botPlayerId.value,admin:adminName})});alert("🤖 تم التحويل");}
+async function loadLoginLogs(){let res=await fetch(API+"/api/loginlogs");let data=await res.json();loginLogBox.innerHTML=data.logs.join('<br>');}
+async function antiHack(){await fetch(API+"/api/antihack",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({admin:adminName})});alert("🛡️ الحماية اشتغلت");}
+function toggleTheme(){isHackerTheme=!isHackerTheme;document.body.classList.toggle("hacker");alert("🎨 الثيم اتغير");}
+async function serverInfo(){let res=await fetch(API+"/api/serverinfo");let data=await res.json();serverInfoBox.innerHTML=`CPU: ${data.cpu}%<br>RAM: ${data.ram}MB`;}
 </script></body></html>
